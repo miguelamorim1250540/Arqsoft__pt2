@@ -113,6 +113,20 @@
             <!-- Consumer Driven Contract Tests (PACT) -->
             <!-- ========================= -->
 
+			<!-- Consumer Driven Contract Tests (PACT) -->
+			<dependency>
+				<groupId>au.com.dius.pact.consumer</groupId>
+				<artifactId>junit5</artifactId>
+				<version>4.6.5</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>au.com.dius.pact.provider</groupId>
+				<artifactId>junit5</artifactId>
+				<version>4.6.5</version>
+				<scope>test</scope>
+			</dependency>
             <dependency>
                 <groupId>au.com.dius.pact.consumer</groupId>
                 <artifactId>junit5</artifactId>
@@ -123,7 +137,7 @@
             <dependency>
                 <groupId>au.com.dius.pact.provider</groupId>
                 <artifactId>junit5</artifactId>
-                <version>4.6.6</version>
+                <version>4.6.10</version>
                 <scope>test</scope>
             </dependency>
 
@@ -139,6 +153,37 @@
                 <version>4.6.10</version>
                 <scope>test</scope>
             </dependency>
+
+			<dependency>
+				<groupId>au.com.dius.pact.consumer</groupId>
+				<artifactId>junit5</artifactId>
+				<version>4.6.5</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>au.com.dius.pact.provider</groupId>
+				<artifactId>spring</artifactId>
+				<version>4.6.5</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- RestAssured para testes de integração / Consumer -->
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>rest-assured</artifactId>
+				<version>5.4.0</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- JsonPath e XmlPath são úteis se precisares parsear JSON/XML -->
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>json-path</artifactId>
+				<version>5.4.0</version>
+				<scope>test</scope>
+			</dependency>
+
 
 		</dependencies>
 
@@ -182,11 +227,11 @@
 				<configuration>
 					<!-- Classes alvo para mutação -->
 					<targetClasses>
-						<param>com.isep.lending_service.command.model.*</param>
+						<param>com.isep.lendings.command.model.*</param>
 					</targetClasses>
 					<!-- Testes que vão ser executados -->
 					<targetTests>
-						<param>com.isep.lending_service.*</param>
+						<param>com.isep.lendings.*</param>
 					</targetTests>
 					<threads>4</threads>
 					<outputFormats>
