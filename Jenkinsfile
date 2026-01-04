@@ -7,7 +7,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
@@ -16,41 +15,76 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                dir("${WORKSPACE}") {
-                    script {
-                        if (env.BRANCH_NAME == 'main') {
-                            echo "🔵 Building PROD image"
-                            sh 'docker build --pull -t lending-service:prod .'
-                        } else {
-                            echo "🟢 Building DEV image"
-                            sh 'docker build --pull -t lending-service:dev .'
-                        }
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        echo "🔵 Building PROD image"
+                        sh 'docker build -t lending-service:prod .'
+                    } else {
+                        echo "🟢 Building DEV image"
+                        sh 'docker build -t lending-service:dev .'
                     }
                 }
             }
-        } 
-// teste
-        stage('Deploy') {
-            steps {
-                dir("${WORKSPACE}") {
-                    script {
-                        echo "🛠 Checking Docker-Compose & running containers"
-                        sh 'docker-compose version'
-                        sh 'docker ps || true'
+        }
 
-                        if (env.BRANCH_NAME == 'main') {
-                            echo "🚀 Deploying to PROD"
-                            sh """
-                                docker-compose -f ${DOCKER_COMPOSE_PROD} down
-                                docker-compose -f ${DOCKER_COMPOSE_PROD} up -d --build
-                            """
-                        } else {
-                            echo "🚧 Deploying to DEV"
-                            sh """
-                                docker-compose -f ${DOCKER_COMPOSE_DEV} down
-                                docker-compose -f ${DOCKER_COMPOSE_DEV} up -d --build
-                            """
-                        }
+        stage('Deploy & Dev Tests') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        echo "🚀 Deploying to PROD"
+                        sh """
+                            docker-compose -f ${DOCKER_COMPOSE_PROD} down
+                            docker-compose -f ${DOCKER_COMPOSE_PROD} up -d --build
+                        """
+                    } else {
+                        echo "🚧 Deploying to DEV"
+                        sh """
+                            docker-compose -f ${DOCKER_COMPOSE_DEV} down
+                            docker-compose -f ${DOCKER_COMPOSE_DEV} up -d --build
+
+                            # -----------------------------
+                            # Smoke / Load tests apenas em DEV
+                            # -----------------------------
+                            echo "🧪 Iniciando testes de DEV"
+
+                            MAX_WAIT=120
+                            INTERVAL=5
+                            ELAPSED=0
+                            CONTAINER="lending-api-dev"
+
+                            echo "A aguardar serviço ficar HEALTHY..."
+
+                            while [ \$ELAPSED -lt \$MAX_WAIT ]; do
+                              STATUS=\$(docker inspect --format='{{.State.Health.Status}}' \${CONTAINER})
+                              echo "Status: \$STATUS"
+
+                              if [ "\$STATUS" = "healthy" ]; then
+                                echo "Serviço saudável!"
+                                break
+                              fi
+
+                              if [ "\$STATUS" = "unhealthy" ]; then
+                                echo "Serviço unhealthy"
+                                docker logs \${CONTAINER}
+                                exit 1
+                              fi
+
+                              sleep \$INTERVAL
+                              ELAPSED=\$((ELAPSED + INTERVAL))
+                            done
+
+                            if [ "\$STATUS" != "healthy" ]; then
+                              echo "Timeout à espera do serviço"
+                              docker logs \${CONTAINER}
+                              exit 1
+                            fi
+
+                            # Smoke tests
+                            chmod +x scripts/smoke-test.sh
+                            scripts/smoke-test.sh http://localhost:8080
+
+                            echo "Load tests ignorados em DEV"
+                        """
                     }
                 }
             }
@@ -63,7 +97,7 @@ pipeline {
                 if (env.BRANCH_NAME == 'main') {
                     echo "✔ PROD deployment successful"
                 } else {
-                    echo "✔ DEV deployment successful"
+                    echo "✔ DEV deployment + smoke tests successful"
                 }
             }
         }
