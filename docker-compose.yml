@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  # -----------------------------
+  # MySQL
+  # -----------------------------
+  mysql:
+    image: mysql:8.1
+    container_name: lendings-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: lendingsdb
+      MYSQL_USER: lendings_user
+      MYSQL_PASSWORD: lendings_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # -----------------------------
+  # MongoDB
+  # -----------------------------
+  mongo:
+    image: mongo:7.0
+    container_name: lendings-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: lendings_mongo
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root123
+    volumes:
+      - mongo_data:/data/db
+
+  # -----------------------------
+  # RabbitMQ
+  # -----------------------------
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: lendings-rabbit
+    restart: unless-stopped
+    ports:
+      - "5672:5672"     # porta AMQP
+      - "15672:15672"   # interface web de gestão
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+# -----------------------------
+# Volumes persistentes
+# -----------------------------
+volumes:
+  mysql_data:
+  mongo_data:
