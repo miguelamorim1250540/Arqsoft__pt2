@@ -31,6 +31,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    echo "🛠 Checking Docker-Compose & running containers"
+                    sh 'docker-compose version'
+                    sh 'docker ps || true'
+
                     if (env.BRANCH_NAME == 'main') {
                         echo "🚀 Deploying to PROD"
                         sh """
