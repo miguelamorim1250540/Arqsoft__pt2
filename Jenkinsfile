@@ -28,8 +28,8 @@ pipeline {
                     }
                 }
             }
-        }
-
+        } 
+// teste
         stage('Deploy') {
             steps {
                 dir("${WORKSPACE}") {
