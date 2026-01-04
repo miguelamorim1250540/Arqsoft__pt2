@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_-compose_DEV = "docker--compose.dev.yml"
-        DOCKER_-compose_PROD = "docker--compose.prod.yml"
+        DOCKER_-compose_DEV = "docker-compose.dev.yml"
+        DOCKER_-compose_PROD = "docker-compose.prod.yml"
     }
 
     stages {
