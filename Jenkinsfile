@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_COMPOSE_DEV = "docker-compose.dev.yml"
-        DOCKER_COMPOSE_PROD = "docker-compose.prod.yml"
+        DOCKER_-compose_DEV = "docker--compose.dev.yml"
+        DOCKER_-compose_PROD = "docker--compose.prod.yml"
     }
 
     stages {
@@ -34,14 +34,14 @@ pipeline {
                     if (env.BRANCH_NAME == 'main') {
                         echo "🚀 Deploying to PROD"
                         sh """
-                            docker compose -f ${DOCKER_COMPOSE_PROD} down
-                            docker compose -f ${DOCKER_COMPOSE_PROD} up -d --build
+                            docker -compose -f ${DOCKER_-compose_PROD} down
+                            docker -compose -f ${DOCKER_-compose_PROD} up -d --build
                         """
                     } else {
                         echo "🚧 Deploying to DEV"
                         sh """
-                            docker compose -f ${DOCKER_COMPOSE_DEV} down
-                            docker compose -f ${DOCKER_COMPOSE_DEV} up -d --build
+                            docker -compose -f ${DOCKER_-compose_DEV} down
+                            docker -compose -f ${DOCKER_-compose_DEV} up -d --build
                         """
                     }
                 }
