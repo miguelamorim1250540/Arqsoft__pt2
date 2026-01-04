@@ -41,14 +41,14 @@ pipeline {
                         if (env.BRANCH_NAME == 'main') {
                             echo "🚀 Deploying to PROD"
                             sh """
-                                docker-compose -f ${DOCKER_COMPOSE_PROD} down
-                                docker-compose -f ${DOCKER_COMPOSE_PROD} up -d --build
+                                docker-compose -f docker-compose.prod.yml down
+                                docker-compose -f docker-compose.prod.yml up -d --build
                             """
                         } else {
                             echo "🚧 Deploying to DEV"
                             sh """
-                                docker-compose -f ${DOCKER_COMPOSE_DEV} down
-                                docker-compose -f ${DOCKER_COMPOSE_DEV} up -d --build
+                                docker-compose -f docker-compose.dev.yml down
+                                docker-compose -f docker-compose.dev.yml up -d --build
                             """
                         }
                     }
